@@ -216,35 +216,27 @@ footer{font-family:var(--display);font-size:.8125rem;color:var(--soft);padding-t
 </div>
 <div class="reel" id="reel" tabindex="0">
 <figure id="statement-1">
-<blockquote class="pull"><p>I’ve paid for electricity. I’m still spending hours every day trying to feed my child and keep doing my job without it.</p></blockquote>
-<figcaption>A resident</figcaption>
-<details>
-<summary>Read the full statement</summary>
 <blockquote>
 <p class="title">What the outage cost me</p>
 <p>I’m a disabled foreign single mum raising a one-year-old in Johannesburg, without a support network I can fall back on. I work from home as a therapist. My sessions are confidential, so I can’t move them to a café or a shared desk. Every session I cancel costs me income I need to keep us going.</p>
 <p>I watched breast milk I’d spent hours pumping and meals I’d cooked for my son start to thaw in the freezer. I haven’t been able to give him his usual meals, and now he wakes up hungry at night. I’m up in the dark feeding him and trying to get him back to sleep. He’s at an age when what he eats matters for his growth and development, and I worry about how long I’ll have to keep making do.</p>
 <p>Then morning comes, and on even less sleep I’m figuring out what I can feed him that day, how to keep his bottles and pump parts clean, when I can wash his clothes or get a hot shower, and whether I can see my clients. I’ve paid for electricity. I’m still spending hours every day trying to feed my child and keep doing my job without it.</p>
 </blockquote>
-</details>
+<figcaption>A resident</figcaption>
 </figure>
 <figure id="statement-2">
-<blockquote class="pull"><p>It’s been expensive, and it’s been exhausting emotionally and psychologically. I am broken.</p></blockquote>
-<figcaption>A resident</figcaption>
-<details>
-<summary>Read the full statement</summary>
 <blockquote>
 <p>I work from home, and since the power has been off, every single day I’ve had to make a plan about where I’m going to work. Either I drive all the way to my parents’ place, which is not ideal because my siblings and family are usually home and the Wi-Fi doesn’t have the speed to manage all of us. Or I work at cafés, which is expensive.</p>
 <p>So every single day I’m going out early, early, early in the morning to catch up on the work I would have done in the evening if I had Wi-Fi and power: sending emails, reading up, preparing for meetings. Sometimes I’m sitting in the car waiting for the café to open. Then I’m spending hundreds each time on coffees and food, and coffees and food, and then dinner on top of that.</p>
 <p>Then I come home to more darkness. No fridge, no coffee at home. It’s been an absolute mess. It’s been expensive, and it’s been exhausting emotionally and psychologically. I am broken.</p>
 </blockquote>
-</details>
+<figcaption>A resident</figcaption>
 </figure>
 <figure id="statement-3">
 <blockquote class="pull"><p>This is no longer simply a matter of inconvenience. It is a direct threat to my livelihood, my financial independence and my mental well-being.</p></blockquote>
 <figcaption>A resident</figcaption>
 <details>
-<summary>Read the full statement</summary>
+<summary>Read full statement</summary>
 <blockquote>
 <p>The repeated and prolonged electricity outages within our complex are having a devastating impact on my livelihood, financial security, quality of life and emotional well-being.</p>
 <p>I am a self-employed freelance writer, editor and educational materials developer. I am solely responsible for meeting my financial obligations and maintaining my household. I do not have a spouse or partner with whom I share these financial responsibilities, nor do I have the security of a guaranteed monthly salary. I charge for my professional services on an hourly basis. Simply put, when I am unable to work, I am unable to earn.</p>
@@ -441,7 +433,7 @@ footer{font-family:var(--display);font-size:.8125rem;color:var(--soft);padding-t
     var d = s.querySelector('details');
     if (!d) return;
     d.addEventListener('toggle', function () {
-      d.querySelector('summary').textContent = d.open ? 'Hide the full statement' : 'Read the full statement';
+      d.querySelector('summary').textContent = d.open ? 'Hide full statement' : 'Read full statement';
       show();
     });
   });
