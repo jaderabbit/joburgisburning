@@ -82,6 +82,12 @@ h2{font-family:var(--display);font-weight:700;font-size:1.375rem;line-height:1.2
 .reel figure{flex:0 0 100%;min-width:0;scroll-snap-align:start;margin:0;background:var(--wash);border-left:6px solid var(--out);padding:1.5rem 1.5rem 1.25rem}
 .reel blockquote{margin:0;display:flex;flex-direction:column;gap:.9rem;font-size:1.1875rem;line-height:1.55}
 .reel .title{font-family:var(--display);font-weight:700;font-size:1.0625rem}
+.reel .pull{font-size:clamp(1.35rem,4.6vw,1.75rem);line-height:1.3;font-weight:600}
+.reel details{margin-top:1rem}
+.reel summary{display:inline-block;cursor:pointer;font-family:var(--display);font-weight:700;font-size:.9375rem;text-decoration:underline;text-underline-offset:.15em;list-style:none}
+.reel summary::-webkit-details-marker{display:none}
+.reel summary:focus-visible{outline:3px solid var(--light);outline-offset:3px}
+.reel details blockquote{margin-top:1rem;font-size:1.0625rem}
 .reel figcaption{font-family:var(--display);font-size:.875rem;color:var(--soft);margin-top:1rem}
 .controls{display:flex;align-items:center;gap:.75rem;margin-bottom:.9rem;font-family:var(--display);font-size:.9375rem}
 .controls button{font:inherit;font-weight:700;color:var(--ink);background:var(--paper);border:2px solid var(--ink);padding:.5rem .95rem;cursor:pointer}
@@ -210,23 +216,35 @@ footer{font-family:var(--display);font-size:.8125rem;color:var(--soft);padding-t
 </div>
 <div class="reel" id="reel" tabindex="0">
 <figure id="statement-1">
+<blockquote class="pull"><p>I’ve paid for electricity. I’m still spending hours every day trying to feed my child and keep doing my job without it.</p></blockquote>
+<figcaption>A resident</figcaption>
+<details>
+<summary>Read the full statement</summary>
 <blockquote>
 <p class="title">What the outage cost me</p>
 <p>I’m a disabled foreign single mum raising a one-year-old in Johannesburg, without a support network I can fall back on. I work from home as a therapist. My sessions are confidential, so I can’t move them to a café or a shared desk. Every session I cancel costs me income I need to keep us going.</p>
 <p>I watched breast milk I’d spent hours pumping and meals I’d cooked for my son start to thaw in the freezer. I haven’t been able to give him his usual meals, and now he wakes up hungry at night. I’m up in the dark feeding him and trying to get him back to sleep. He’s at an age when what he eats matters for his growth and development, and I worry about how long I’ll have to keep making do.</p>
 <p>Then morning comes, and on even less sleep I’m figuring out what I can feed him that day, how to keep his bottles and pump parts clean, when I can wash his clothes or get a hot shower, and whether I can see my clients. I’ve paid for electricity. I’m still spending hours every day trying to feed my child and keep doing my job without it.</p>
 </blockquote>
-<figcaption>A resident</figcaption>
+</details>
 </figure>
 <figure id="statement-2">
+<blockquote class="pull"><p>It’s been expensive, and it’s been exhausting emotionally and psychologically. I am broken.</p></blockquote>
+<figcaption>A resident</figcaption>
+<details>
+<summary>Read the full statement</summary>
 <blockquote>
 <p>I work from home, and since the power has been off, every single day I’ve had to make a plan about where I’m going to work. Either I drive all the way to my parents’ place, which is not ideal because my siblings and family are usually home and the Wi-Fi doesn’t have the speed to manage all of us. Or I work at cafés, which is expensive.</p>
 <p>So every single day I’m going out early, early, early in the morning to catch up on the work I would have done in the evening if I had Wi-Fi and power: sending emails, reading up, preparing for meetings. Sometimes I’m sitting in the car waiting for the café to open. Then I’m spending hundreds each time on coffees and food, and coffees and food, and then dinner on top of that.</p>
 <p>Then I come home to more darkness. No fridge, no coffee at home. It’s been an absolute mess. It’s been expensive, and it’s been exhausting emotionally and psychologically. I am broken.</p>
 </blockquote>
-<figcaption>A resident</figcaption>
+</details>
 </figure>
 <figure id="statement-3">
+<blockquote class="pull"><p>This is no longer simply a matter of inconvenience. It is a direct threat to my livelihood, my financial independence and my mental well-being.</p></blockquote>
+<figcaption>A resident</figcaption>
+<details>
+<summary>Read the full statement</summary>
 <blockquote>
 <p>The repeated and prolonged electricity outages within our complex are having a devastating impact on my livelihood, financial security, quality of life and emotional well-being.</p>
 <p>I am a self-employed freelance writer, editor and educational materials developer. I am solely responsible for meeting my financial obligations and maintaining my household. I do not have a spouse or partner with whom I share these financial responsibilities, nor do I have the security of a guaranteed monthly salary. I charge for my professional services on an hourly basis. Simply put, when I am unable to work, I am unable to earn.</p>
@@ -239,7 +257,7 @@ footer{font-family:var(--display);font-size:.8125rem;color:var(--soft);padding-t
 <p>This is no longer simply a matter of inconvenience. It is a direct threat to my livelihood, my financial independence and my mental well-being.</p>
 <p>I urgently appeal to those responsible for addressing these electricity supply issues to recognise the severity of their impact on residents and to prioritise a permanent, sustainable resolution.</p>
 </blockquote>
-<figcaption>A resident</figcaption>
+</details>
 </figure>
 </div>
 </section>
@@ -418,6 +436,14 @@ footer{font-family:var(--display);font-size:.8125rem;color:var(--soft);padding-t
   reel.addEventListener('keydown', function (e) {
     if (e.key === 'ArrowRight') { e.preventDefault(); go(current() + 1); }
     if (e.key === 'ArrowLeft') { e.preventDefault(); go(current() - 1); }
+  });
+  slides.forEach(function (s) {
+    var d = s.querySelector('details');
+    if (!d) return;
+    d.addEventListener('toggle', function () {
+      d.querySelector('summary').textContent = d.open ? 'Hide the full statement' : 'Read the full statement';
+      show();
+    });
   });
   reel.addEventListener('scroll', show, {passive: true});
   window.addEventListener('resize', show);
