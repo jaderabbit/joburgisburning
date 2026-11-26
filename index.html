@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Braamfontein precinct outage costs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=Public+Sans:wght@400;600&display=swap">
+<style>
+/* Layout idea: one reading column, a report that opens on the current outage and then the long-term cost. Red is reserved for time without power. */
+:root{
+  --bg:#f4f6f8; --panel:#ffffff; --ink:#131a22; --muted:#56616f; --line:#dce1e7;
+  --critical:#b3261e; --steel:#2e4f74; --amber:#b9770e; --slate:#8a95a3;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Public Sans","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10151b; --panel:#182029; --ink:#e9edf2; --muted:#9aa6b4; --line:#2a3541;
+    --critical:#ff6b61; --steel:#7fa8d6; --amber:#e3a94a; --slate:#6f7c8b; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10151b; --panel:#182029; --ink:#e9edf2; --muted:#9aa6b4; --line:#2a3541;
+  --critical:#ff6b61; --steel:#7fa8d6; --amber:#e3a94a; --slate:#6f7c8b; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1rem;line-height:1.55}
+.page{max-width:46rem;margin:0 auto;padding:2rem 1rem 4rem;display:flex;flex-direction:column;gap:1.5rem}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:1.75rem;font-weight:700}
+.part{font-size:1.35rem;font-weight:700;border-top:2px solid var(--ink);padding-top:1.25rem;margin-top:1rem}
+h3{font-size:1.1rem;font-weight:700}
+p{margin:0}
+.lead{font-size:1.1rem}
+.muted{color:var(--muted);font-size:.875rem}
+.stack{display:flex;flex-direction:column;gap:.75rem}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:1.25rem;display:flex;flex-direction:column;gap:.9rem}
+.hot{border-left:4px solid var(--critical)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.75rem}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:1rem}
+.tile .label{color:var(--muted);font-size:.8125rem}
+.tile .big{font-family:var(--display);font-weight:700;font-size:1.6rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tile.alert .big{color:var(--critical)}
+.bars{display:flex;flex-direction:column;gap:.7rem}
+.bars .name{font-size:.875rem}
+.bars .row{display:grid;grid-template-columns:1fr 6.5rem;gap:.5rem;align-items:center}
+.track{height:16px;display:flex}
+.fill{height:16px;border-radius:2px;background:var(--steel);min-width:2px}
+.fill.crit{background:var(--critical)}
+.fill.amber{background:var(--amber)}
+.fill.slate{background:var(--slate)}
+.fill + .fill{margin-left:1px;border-radius:0}
+.val{font-size:.875rem;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.strip{display:grid;grid-template-columns:repeat(19,1fr);gap:2px}
+.day{display:flex;flex-direction:column;align-items:center;gap:.25rem;font-size:.6875rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.day i{display:flex;align-items:center;justify-content:center;width:100%;height:36px;border-radius:2px;background:var(--critical)}
+.day b{width:6px;height:6px;border-radius:50%;background:var(--panel)}
+.timeline{list-style:none;margin:0;padding:0;border-left:2px solid var(--line);display:flex;flex-direction:column;gap:.9rem}
+.timeline li{position:relative;padding-left:1.1rem}
+.timeline li::before{content:"";position:absolute;left:-6px;top:.45rem;width:10px;height:10px;border-radius:50%;background:var(--critical)}
+.timeline .when{display:block;font-weight:600}
+.timeline .src{color:var(--muted);font-size:.8125rem}
+a{color:var(--steel)}
+a:focus-visible{outline:2px solid var(--steel);outline-offset:2px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.875rem;font-variant-numeric:tabular-nums}
+th,td{padding:.5rem .6rem;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:.8125rem;vertical-align:bottom}
+th:first-child,td:first-child{text-align:left}
+td.basis,th.basis{text-align:left;min-width:12rem}
+tr.total td{font-weight:600}
+.key{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.8125rem;color:var(--muted)}
+.key span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.35rem;background:var(--steel)}
+.key .k2::before{background:var(--amber)}
+.key .k3::before{background:var(--slate)}
+.quote{margin:0;padding-left:1.1rem;border-left:3px solid var(--critical);display:flex;flex-direction:column;gap:.75rem;line-height:1.65}
+.quote-title{font-family:var(--display);font-weight:700}
+footer{color:var(--muted);font-size:.8125rem;border-top:1px solid var(--line);padding-top:1rem}
+</style>
+</head>
+<body>
+<main class="page">
+
+<header class="stack">
+<h1>A model of what unplanned power outages cost The Exchange, Sontonga and New Braamfontein Lofts</h1>
+<p class="lead">We are paying City Power customers: about 600 residents in 330 households across three buildings in the Braamfontein precinct.</p>
+<p>The costs here are well-informed estimates. The number of households and residents, and the share who work from home, work outside the home or study, come from the residents and trustees of the three buildings. Outage dates and times come from the residents' own logs, and the generator costs are actual payments.</p>
+</header>
+
+<h2 class="part">Part 1: The current outage</h2>
+
+<section class="tiles" aria-label="The current outage in four numbers">
+<div class="tile alert"><div class="label">Days without power</div><div class="big">17.4</div></div>
+<div class="tile alert"><div class="label">Hours past the 24-hour restoration target</div><div class="big">394.4</div></div>
+<div class="tile"><div class="label">Estimated cost to residents</div><div class="big">R3,947,430</div></div>
+<div class="tile"><div class="label">Paid by residents for generators</div><div class="big">R128,132</div></div>
+</section>
+
+<section class="card hot">
+<h3>17.4 days without power. This is diabolical.</h3>
+<p>City Power's Mayfair substation caught fire in the early hours of 8 November. A second explosion the next evening, while technicians were restoring supply, knocked out the whole substation. By 12 November City Power reported the first phase of repairs 98% complete, and critical customers such as the SABC and Netcare Garden City Hospital were reconnected first. Our homes stayed without power for another 13 days.</p>
+<p>Our power went off on 8 November 2026 and came back on 25 November 2026. That is <strong>418.4 hours</strong>, or <strong>17.4 days</strong>, without electricity.</p>
+<p>It went off again on <strong>26 November 2026</strong> and was still off when this was written.</p>
+<p>NRS 047, the national quality of service standard for electricity supply, sets targets for restoring power after an unplanned outage. The longest is 24 hours. This outage ran 17.4 times that long.</p>
+<div class="bars" role="img" aria-label="Bar chart: the 24-hour restoration target, our previous longest outage at 101.5 hours, and this outage at 418.4 hours">
+<div><div class="name">NRS 047 longest restoration target</div><div class="row"><div class="track"><div class="fill" style="width:5.7%"></div></div><div class="val">24 hours</div></div></div>
+<div><div class="name">Our previous longest outage (September 2024)</div><div class="row"><div class="track"><div class="fill" style="width:24.3%"></div></div><div class="val">101.5 hours</div></div></div>
+<div><div class="name">This outage</div><div class="row"><div class="track"><div class="fill crit" style="width:100%"></div></div><div class="val">418.4 hours</div></div></div>
+</div>
+</section>
+
+<section class="card">
+<h3>Day by day</h3>
+<p class="muted">November 2026. Each block is one day. The darker the block, the more of that day we had no power. A dot marks a day with an event in the list below.</p>
+<div class="strip" role="img" aria-label="Strip of 19 days from 8 to 26 November 2026. Every day is shaded as without power for all or most of its 24 hours.">
+<div class="day"><i style="opacity:.84"><b></b></i>8</div>
+<div class="day"><i><b></b></i>9</div>
+<div class="day"><i></i>10</div>
+<div class="day"><i></i>11</div>
+<div class="day"><i><b></b></i>12</div>
+<div class="day"><i></i>13</div>
+<div class="day"><i></i>14</div>
+<div class="day"><i></i>15</div>
+<div class="day"><i><b></b></i>16</div>
+<div class="day"><i></i>17</div>
+<div class="day"><i><b></b></i>18</div>
+<div class="day"><i></i>19</div>
+<div class="day"><i><b></b></i>20</div>
+<div class="day"><i></i>21</div>
+<div class="day"><i></i>22</div>
+<div class="day"><i></i>23</div>
+<div class="day"><i><b></b></i>24</div>
+<div class="day"><i style="opacity:.74"><b></b></i>25</div>
+<div class="day"><i style="opacity:.96"><b></b></i>26</div>
+</div>
+<ol class="timeline">
+<li><span class="when">8 November</span>A fire breaks out at City Power's Mayfair substation in the early hours. Our power goes off at 05:10. <span class="src">Source: <a href="https://thestar.co.za/news/2026-11-16-mayfair-substation-explosion-triggers-further-16-hour-power-shutdown/">The Star</a></span></li>
+<li><span class="when">9 November</span>A second explosion at about 18:00, while technicians are restoring supply, knocks out the whole substation. <span class="src">Source: <a href="https://www.jacarandafm.com/news/news/city-power-reports-second-explosion-mayfair-substation/">Jacaranda FM</a></span></li>
+<li><span class="when">12 November</span>City Power says the first phase of repairs is 98% complete, with the SABC and Netcare Garden City Hospital first in line. Some residents are told to expect no power until the following weekend. <span class="src">Source: <a href="https://www.sabcnews.com/sabcnews/mayfair-substation-first-phase-power-restoration-98-complete/">SABC News</a></span></li>
+<li><span class="when">12 November</span>Residents of Sontonga and The Exchange hire a generator at their own cost. <span class="src">Source: residents' generator fund records</span></li>
+<li><span class="when">16 November</span>Supply returns at about 13:30 and the first generator is disconnected. Supply fails again at about 20:00. City Power announces a 16-hour emergency shutdown to finish repairs at Mayfair. <span class="src">Source: <a href="https://iol.co.za/the-star/news/2026-11-16-mayfair-substation-explosion-triggers-further-16-hour-power-shutdown/">The Star</a> and the residents' group</span></li>
+<li><span class="when">18 November</span>Residents hire a second, larger generator and pay for delivery and installation again. <span class="src">Source: residents' generator fund records</span></li>
+<li><span class="when">20 November</span>Twelve days after the fire, repairs at Mayfair are still under way and parts of Johannesburg remain without power. <span class="src">Source: <a href="https://iol.co.za/the-star/news/2026-11-20-mayfair-substation-repairs-continue-as-parts-of-johannesburg-remain-without-power/">The Star</a></span></li>
+<li><span class="when">24 November</span>City Power supply returns to the area, but a fault on the connection between City Power's equipment and our transformer keeps The Exchange off. <span class="src">Source: residents' group</span></li>
+<li><span class="when">25 November</span>Power is fully restored at 15:33. <span class="src">Source: residents' group</span></li>
+<li><span class="when">26 November</span>Power goes off again at 01:24, less than ten hours later. <span class="src">Source: residents' group</span></li>
+</ol>
+</section>
+
+<section class="card">
+<h3>What this one outage cost residents</h3>
+<p>This one outage cost residents an estimated <strong>R3,947,430</strong>.</p>
+<p>Of our 600 residents, we estimate that 210 work from home, 150 are students and 240 work outside the home, at offices and hospitals. Without power, people who work from home must pay for a desk somewhere else, students must travel to study, and nobody can cook, wash clothes or keep food cold.</p>
+<div class="bars" role="img" aria-label="Bar chart of the estimated cost of this outage by type of cost. Dinner is the largest at R1,632,000.">
+<div><div class="name">Shared office desk for people who work from home</div><div class="row"><div class="track"><div class="fill" style="width:49.4%"></div></div><div class="val">R806,400</div></div></div>
+<div><div class="name">Transport to somewhere with power</div><div class="row"><div class="track"><div class="fill" style="width:23.5%"></div></div><div class="val">R384,000</div></div></div>
+<div><div class="name">Lunch away from home</div><div class="row"><div class="track"><div class="fill" style="width:45.2%"></div></div><div class="val">R737,280</div></div></div>
+<div><div class="name">Dinner bought because nobody can cook</div><div class="row"><div class="track"><div class="fill" style="width:100%"></div></div><div class="val">R1,632,000</div></div></div>
+<div><div class="name">Laundry</div><div class="row"><div class="track"><div class="fill" style="width:7.6%"></div></div><div class="val">R123,750</div></div></div>
+<div><div class="name">Spoilt groceries</div><div class="row"><div class="track"><div class="fill" style="width:16.2%"></div></div><div class="val">R264,000</div></div></div>
+</div>
+<div class="scroll">
+<table>
+<thead><tr><th>Cost</th><th class="basis">How it is worked out</th><th>Estimate (R)</th></tr></thead>
+<tbody>
+<tr><td>Shared office desk for people who work from home</td><td class="basis">210 people x 12.8 working days x R300 a day</td><td>806,400</td></tr>
+<tr><td>Transport to somewhere with power</td><td class="basis">12.8 working days x (210 people x R100 + 150 students x R60)</td><td>384,000</td></tr>
+<tr><td>Lunch away from home</td><td class="basis">360 people x 12.8 working days x R160</td><td>737,280</td></tr>
+<tr><td>Dinner bought because nobody can cook</td><td class="basis">600 residents x 17 evenings x R160</td><td>1,632,000</td></tr>
+<tr><td>Laundry</td><td class="basis">330 households x 2.5 weeks x R150 a load</td><td>123,750</td></tr>
+<tr><td>Spoilt groceries</td><td class="basis">330 households x R800 of groceries each</td><td>264,000</td></tr>
+<tr class="total"><td>Total</td><td class="basis"></td><td>3,947,430</td></tr>
+</tbody>
+</table>
+</div>
+<p class="muted">Lost income is not counted. Residents who work outside the home are counted only for dinner, laundry and groceries.</p>
+</section>
+
+<section class="card">
+<h3>Residents are already paying for their own generator</h3>
+<p>During the November outage, <strong>133</strong> households at Sontonga and The Exchange each paid R700 out of their own pockets to hire a generator for about 8 hours a day. That covers only the residents who could afford to contribute.</p>
+<p>Over 8 running days it has cost <strong>R128,132</strong>: R15,826 for hire, R45,294 for delivery and installation, R60,750 for 1,937 litres of diesel, and R6,262 of hire still to be invoiced.</p>
+<div class="bars" role="img" aria-label="Bar chart of generator costs. Diesel is the largest at R60,750.">
+<div><div class="name">Diesel</div><div class="row"><div class="track"><div class="fill amber" style="width:100%"></div></div><div class="val">R60,750</div></div></div>
+<div><div class="name">Delivery and installation, second hire</div><div class="row"><div class="track"><div class="fill amber" style="width:44.1%"></div></div><div class="val">R26,816</div></div></div>
+<div><div class="name">Delivery and installation, first hire</div><div class="row"><div class="track"><div class="fill amber" style="width:30.4%"></div></div><div class="val">R18,478</div></div></div>
+<div><div class="name">Generator hire, paid</div><div class="row"><div class="track"><div class="fill amber" style="width:26.1%"></div></div><div class="val">R15,826</div></div></div>
+<div><div class="name">Generator hire, still to be invoiced</div><div class="row"><div class="track"><div class="fill amber" style="width:10.3%"></div></div><div class="val">R6,262</div></div></div>
+</div>
+<p>We had to bring the generator out twice. City Power restored supply on 16 November, the first generator was disconnected, and the supply failed again that same evening. So residents paid for delivery and installation twice: <strong>R18,478</strong> for the first hire and <strong>R26,816</strong> for the second.</p>
+<p>Residents contributed R93,100, so the fund is <strong>R35,032</strong> short. That is R963 for each paying household so far, and about R8,837 for every further day.</p>
+<p class="muted">This is on top of the costs in the table above. Some diesel is priced at an assumed R33.75 a litre, and the second hire's delivery charge is being queried with the supplier.</p>
+</section>
+
+<section class="card">
+<h3>In residents' words</h3>
+<blockquote class="quote">
+<p class="quote-title">What the outage cost me</p>
+<p>I’m a disabled foreign single mum raising a one-year-old in Johannesburg, without a support network I can fall back on. I work from home as a therapist. My sessions are confidential, so I can’t move them to a café or a shared desk. Every session I cancel costs me income I need to keep us going.</p>
+<p>I watched breast milk I’d spent hours pumping and meals I’d cooked for my son start to thaw in the freezer. I haven’t been able to give him his usual meals, and now he wakes up hungry at night. I’m up in the dark feeding him and trying to get him back to sleep. He’s at an age when what he eats matters for his growth and development, and I worry about how long I’ll have to keep making do.</p>
+<p>Then morning comes, and on even less sleep I’m figuring out what I can feed him that day, how to keep his bottles and pump parts clean, when I can wash his clothes or get a hot shower, and whether I can see my clients. I’ve paid for electricity. I’m still spending hours every day trying to feed my child and keep doing my job without it.</p>
+<p class="muted">A resident</p>
+</blockquote>
+</section>
+
+<h2 class="part">Part 2: The long-term cost</h2>
+
+<p class="lead">Since January 2024, unplanned power outages (excluding load shedding) have cost our 330 households an estimated <strong>R18,002,220</strong>.</p>
+
+<section class="tiles" aria-label="The long-term cost in five numbers">
+<div class="tile"><div class="label">Estimated cost since January 2024</div><div class="big">R18,002,220</div></div>
+<div class="tile"><div class="label">Additional cost to work or study elsewhere</div><div class="big">R4,529,100</div></div>
+<div class="tile"><div class="label">Extra cost for food and laundry elsewhere</div><div class="big">R9,249,120</div></div>
+<div class="tile"><div class="label">Spoilt groceries</div><div class="big">R4,224,000</div></div>
+<div class="tile"><div class="label">Average per household</div><div class="big">R54,552</div></div>
+</section>
+
+<section class="card">
+<h3>Where the cost comes from</h3>
+<p>Since January 2024, excluding load shedding, <strong>16</strong> outages have run longer than 24 hours, long enough to spoil the food in every fridge and freezer.</p>
+<div class="scroll">
+<table>
+<thead><tr><th>Cost</th><th class="basis">How it is worked out</th><th>Estimate (R)</th></tr></thead>
+<tbody>
+<tr><td>Shared office desk for people who work from home</td><td class="basis">210 people x 48.7 working days x R300 a day</td><td>3,068,100</td></tr>
+<tr><td>Transport to somewhere with power</td><td class="basis">48.7 working days x (210 people x R100 + 150 students x R60)</td><td>1,461,000</td></tr>
+<tr><td>Lunch away from home</td><td class="basis">360 people x 48.7 working days x R160</td><td>2,805,120</td></tr>
+<tr><td>Dinner bought because nobody can cook</td><td class="basis">600 residents x 63 evenings x R160</td><td>6,048,000</td></tr>
+<tr><td>Laundry</td><td class="basis">330 households x 8.0 weeks x R150 a load</td><td>396,000</td></tr>
+<tr><td>Spoilt groceries</td><td class="basis">330 households x R800 x 16 outages longer than 24 hours</td><td>4,224,000</td></tr>
+<tr class="total"><td>Total</td><td class="basis"></td><td>18,002,220</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section class="card">
+<h3>The cost keeps rising year after year</h3>
+<div class="key"><span>Additional cost to work or study elsewhere</span><span class="k2">Extra cost for food and laundry elsewhere</span><span class="k3">Spoilt groceries</span></div>
+<div class="bars" role="img" aria-label="Stacked bar chart of estimated cost by year: R3.6 million in 2024, R6.1 million in 2025 and R8.3 million in 2026 so far">
+<div><div class="name">2024</div><div class="row"><div class="track"><div class="fill" style="width:10.7%"></div><div class="fill amber" style="width:20.1%"></div><div class="fill slate" style="width:12.8%"></div></div><div class="val">R3.6 million</div></div></div>
+<div><div class="name">2025</div><div class="row"><div class="track"><div class="fill" style="width:18%"></div><div class="fill amber" style="width:37%"></div><div class="fill slate" style="width:19.1%"></div></div><div class="val">R6.1 million</div></div></div>
+<div><div class="name">2026 so far</div><div class="row"><div class="track"><div class="fill" style="width:26.1%"></div><div class="fill amber" style="width:54.8%"></div><div class="fill slate" style="width:19.1%"></div></div><div class="val">R8.3 million</div></div></div>
+</div>
+<div class="scroll">
+<table>
+<thead><tr><th>Year</th><th>Outages</th><th>Longer than 24 hours</th><th>Working days without power</th><th>Evenings without power</th><th>Additional cost to work or study elsewhere (R)</th><th>Extra cost for food and laundry elsewhere (R)</th><th>Spoilt groceries (R)</th><th>Total (R)</th></tr></thead>
+<tbody>
+<tr><td>2024</td><td>12</td><td>4</td><td>9.5</td><td>11</td><td>883,500</td><td>1,662,600</td><td>1,056,000</td><td>3,602,100</td></tr>
+<tr><td>2025</td><td>17</td><td>6</td><td>16.0</td><td>21</td><td>1,488,000</td><td>3,056,400</td><td>1,584,000</td><td>6,128,400</td></tr>
+<tr><td>2026</td><td>13</td><td>6</td><td>23.2</td><td>31</td><td>2,157,600</td><td>4,530,120</td><td>1,584,000</td><td>8,271,720</td></tr>
+</tbody>
+</table>
+</div>
+<p class="muted">2026 is not over yet, and its figures leave out the outage that is still running.</p>
+</section>
+
+<section class="card hot">
+<h3>And that is the conservative number</h3>
+<p>Every rand above is something a resident had to pay for just to keep living and working. The bigger costs are the ones we could not put a number on. None of these are in the <strong>R18,002,220</strong>:</p>
+<p><strong>Lost productivity.</strong> The hours of work and study that simply did not happen.</p>
+<p><strong>Lost business.</strong> The clients, contracts and income lost because the work could not be done.</p>
+<p><strong>Healthcare.</strong> The cost of the stress, the strain on mental health, and weeks without proper hygiene facilities.</p>
+</section>
+
+<section class="card">
+<h3>How these estimates are worked out</h3>
+<p>Only unplanned outages are counted. Scheduled load shedding is excluded from every figure.</p>
+<p>Who lives here: 600 residents in 330 households. We estimate that 210 work from home, 150 are students and 240 work outside the home, at offices and hospitals.</p>
+<p>A working day without power is 8 hours without power between 09:00 and 17:00 on a weekday. Public holidays are not taken out.</p>
+<p>People who work from home: R300 for a desk in a shared office, R100 for transport there and back, and R160 each for lunch and dinner, for each working day and evening without power.</p>
+<p>Students: R60 for transport to campus or a library and R160 each for lunch and dinner, for each working day and evening without power.</p>
+<p>Dinner: R160 for each resident, the cost of a bought meal, for each evening the power was off at 19:00. The generator ran on some of those evenings for the households that paid for it.</p>
+<p>Laundry: R150 for each household, one laundromat load, for each week of an outage longer than 24 hours.</p>
+<p>Spoilt groceries: R800 for each household, for every outage longer than 24 hours.</p>
+<p>An outage starts at the first report in the residents' WhatsApp groups and ends at the "power restored" post, so lengths are a slight undercount. Outages with no "power restored" post are left out of every figure here.</p>
+<p>Outages before April 2025 come from the New Braamfontein Lofts residents' group, which is on a separate City Power line from The Exchange and Sontonga.</p>
+<p>Not counted: lost income, damaged appliances, medicine that needs a fridge, security, and lost rental income.</p>
+</section>
+
+<footer>Figures as at 26 November 2026. Prepared by the residents and trustees of The Exchange, Sontonga and New Braamfontein Lofts.</footer>
+
+</main>
+</body>
+</html>
