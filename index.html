@@ -9,9 +9,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Schibsted+Grotesk:wght@500;700;800&display=swap">
 <style>
-/* Layout idea: a residents' dossier. One left-aligned column on white, black type, and a single yellow that means two things: power on, and a figure we have marked up. Black blocks are time without power. */
+/* Layout idea: a residents' dossier. One left-aligned column on white, black type, and a single yellow that means two things: power on, and a figure we have marked up. Red blocks are time without power. */
 :root{
-  --paper:#ffffff; --ink:#1c1c1c; --soft:#5d5d5d; --rule:#dcdcdc; --wash:#f3f3f1; --light:#ffd60a; --mid:#8f8f8f; --pale:#c9c9c9;
+  --paper:#ffffff; --ink:#1c1c1c; --soft:#5d5d5d; --rule:#dcdcdc; --wash:#f3f3f1; --light:#ffd60a; --out:#c4161c; --mid:#8f8f8f; --pale:#c9c9c9;
   --display:"Schibsted Grotesk","Helvetica Neue",Arial,sans-serif;
   --text:"Newsreader",Georgia,"Times New Roman",serif;
   color-scheme:light;
@@ -38,10 +38,10 @@ mark{background:linear-gradient(transparent 52%,var(--light) 52%);color:inherit;
 .windows{margin-top:2.25rem}
 .windows .row{display:grid;grid-template-columns:repeat(19,1fr);gap:3px}
 .win{display:flex;flex-direction:column;gap:.3rem;align-items:center;font-family:var(--display);font-size:.6875rem;color:var(--soft);font-variant-numeric:tabular-nums}
-.win i{display:block;width:100%;height:clamp(3rem,13vw,5.5rem);background:var(--ink)}
+.win i{display:block;width:100%;height:clamp(3rem,13vw,5.5rem);background:var(--out)}
 .caption{font-family:var(--display);font-size:.8125rem;color:var(--soft);margin-top:.75rem;line-height:1.45}
 .key{display:inline-block;width:.7em;height:.7em;margin-right:.3em;vertical-align:baseline}
-.key.off{background:var(--ink)}
+.key.off{background:var(--out)}
 .key.on{background:var(--light)}
 
 section{padding-top:2.75rem}
@@ -61,6 +61,7 @@ h2{font-family:var(--display);font-weight:700;font-size:1.375rem;line-height:1.2
 .track{display:flex;height:12px;min-width:0}
 .fill{height:12px;background:var(--mid);min-width:2px}
 .fill.ink{background:var(--ink)}
+.fill.out{background:var(--out)}
 .fill.pale{background:var(--pale)}
 .fill + .fill{margin-left:1px}
 .val{font-size:.875rem;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
@@ -78,7 +79,7 @@ h2{font-family:var(--display);font-weight:700;font-size:1.375rem;line-height:1.2
 .reel{display:flex;align-items:flex-start;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;position:relative}
 .reel::-webkit-scrollbar{display:none}
 @media (prefers-reduced-motion: no-preference){.reel{transition:height .25s ease-out}}
-.reel figure{flex:0 0 100%;min-width:0;scroll-snap-align:start;margin:0;background:var(--wash);border-left:6px solid var(--ink);padding:1.5rem 1.5rem 1.25rem}
+.reel figure{flex:0 0 100%;min-width:0;scroll-snap-align:start;margin:0;background:var(--wash);border-left:6px solid var(--out);padding:1.5rem 1.5rem 1.25rem}
 .reel blockquote{margin:0;display:flex;flex-direction:column;gap:.9rem;font-size:1.1875rem;line-height:1.55}
 .reel .title{font-family:var(--display);font-weight:700;font-size:1.0625rem}
 .reel figcaption{font-family:var(--display);font-size:.875rem;color:var(--soft);margin-top:1rem}
@@ -128,7 +129,7 @@ footer{font-family:var(--display);font-size:.8125rem;color:var(--soft);padding-t
 
 <div class="windows">
 <div class="row" role="img" aria-label="Nineteen days from 8 to 26 November 2026. Power is off from 05:10 on the 8th until 15:33 on the 25th, then off again from 01:24 on the 26th.">
-<div class="win"><i style="background:linear-gradient(to right,var(--light) 21.5%,var(--ink) 21.5%)"></i>8</div>
+<div class="win"><i style="background:linear-gradient(to right,var(--light) 21.5%,var(--out) 21.5%)"></i>8</div>
 <div class="win"><i></i>9</div>
 <div class="win"><i></i>10</div>
 <div class="win"><i></i>11</div>
@@ -145,8 +146,8 @@ footer{font-family:var(--display);font-size:.8125rem;color:var(--soft);padding-t
 <div class="win"><i></i>22</div>
 <div class="win"><i></i>23</div>
 <div class="win"><i></i>24</div>
-<div class="win"><i style="background:linear-gradient(to right,var(--ink) 64.8%,var(--light) 64.8%)"></i>25</div>
-<div class="win"><i style="background:linear-gradient(to right,var(--light) 5.8%,var(--ink) 5.8%)"></i>26</div>
+<div class="win"><i style="background:linear-gradient(to right,var(--out) 64.8%,var(--light) 64.8%)"></i>25</div>
+<div class="win"><i style="background:linear-gradient(to right,var(--light) 5.8%,var(--out) 5.8%)"></i>26</div>
 </div>
 <p class="caption">November 2026. Each block is one day, read left to right. <span class="key off"></span>No power. <span class="key on"></span>Power on.</p>
 </div>
@@ -179,7 +180,7 @@ footer{font-family:var(--display);font-size:.8125rem;color:var(--soft);padding-t
 <div class="bars" role="img" aria-label="Bar chart: the 24-hour restoration target, our previous longest outage at 101.5 hours, and this outage at 418.4 hours">
 <div><div class="name">NRS 047 longest restoration target</div><div class="line"><div class="track"><div class="fill" style="width:5.7%"></div></div><div class="val">24 hours</div></div></div>
 <div><div class="name">Our previous longest outage (September 2024)</div><div class="line"><div class="track"><div class="fill" style="width:24.3%"></div></div><div class="val">101.5 hours</div></div></div>
-<div><div class="name">This outage</div><div class="line"><div class="track"><div class="fill ink" style="width:100%"></div></div><div class="val">418.4 hours</div></div></div>
+<div><div class="name">This outage</div><div class="line"><div class="track"><div class="fill out" style="width:100%"></div></div><div class="val">418.4 hours</div></div></div>
 </div>
 </div>
 </section>
